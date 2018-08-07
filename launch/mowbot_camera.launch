@@ -8,7 +8,7 @@
 	important parameters:
 	 -->
 
-	<node pkg="mowbot_camera" type="mowbot_camera.py" name="Mowbot_camera" output="screen">
+	<node pkg="mowbot_camera" type="mowbot_camera_node.py" name="mowbot_camera" output="screen">
 		<param name="my_name" value="Shaun Bowman"/>
 	</node>
 </launch>
