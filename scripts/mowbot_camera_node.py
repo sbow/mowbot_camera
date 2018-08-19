@@ -19,12 +19,15 @@ from mowbot_line_find.mowbot_line_find import MowbotLineFind
 
 class MowbotCameraNode:
     myVar = 0
+    debug_find_line = False
     debug = False
     debug_one_frame = True
+    debug_show_grid = True
     _frame_count = 0
     _image = []
     _frame_stop = 3
-    _image_path = "/home/shaun/catkin_ws/src/mowbot_camera/scripts/experimental/"
+    #_image_path = "/home/shaun/catkin_ws/src/mowbot_camera/scripts/experimental/"
+    _image_path = "/home/nvidia/racecar-ws/src/mowbot_camera/scripts/experimental/"
     _file_name = "one_image.png"
 
     line_find = MowbotLineFind()
@@ -42,7 +45,9 @@ class MowbotCameraNode:
                 print(e)
 
             self.line_find.updade_img_cur(cv_image)
-            self.line_find.find_lines()
+
+            if self.debug_find_line:
+                self.line_find.find_lines()
 
             if self.debug:
                 cv2.imshow("Image", cv_image)
@@ -52,12 +57,29 @@ class MowbotCameraNode:
                 self._frame_count = self._frame_count + 1
                 self._image = cv_image
 
+            if self.debug_show_grid:
+                self.line_find.draw_debug_grid()
+
         else:
-            cv2.imshow("Image", self._image)
-            cv2.waitKey(1)
+
+            try:
+                cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            except CvBridgeError as e:
+                print(e)
+
             if self._frame_count == self._frame_stop:
                 cv2.imwrite(self._image_path + self._file_name, self._image)
                 self._frame_count = self._frame_count + 1
+
+            if self.debug_show_grid:
+                self.line_find.draw_debug_grid()
+
+            else:
+                self._image = cv_image
+                cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+                cv2.resizeWindow('image', 960, 540)
+                cv2.imshow('image', self._image)
+                cv2.waitKey(1)
             pass
 
 

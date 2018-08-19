@@ -12,7 +12,8 @@ No ROS dependancy
 import cv2
 from mowbot_line_find.mowbot_line_find import MowbotLineFind
 
-_image_path = "/home/shaun/catkin_ws/src/mowbot_camera/scripts/experimental/"
+#_image_path = "/home/shaun/catkin_ws/src/mowbot_camera/scripts/experimental/"
+_image_path = "/home/nvidia/racecar-ws/src/mowbot_camera/scripts/experimental/"
 _file_name = "one_image.png"
 
 mowbot_line_find = MowbotLineFind()

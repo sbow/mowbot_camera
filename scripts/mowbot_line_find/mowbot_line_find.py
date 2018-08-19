@@ -88,7 +88,7 @@ class MowbotLineFind():
 
     def draw_debug_grid(self):
         # show an image w grid-lines
-        n_row, n_col, n_colors = self.img_cur.shape()
+        n_row, n_col, n_colors = self.img_cur.shape
         line_width = 1
 
         if n_row % 2 == 0:
@@ -96,12 +96,15 @@ class MowbotLineFind():
 
         center_row = int( np.floor( n_row / 2) )
         center_col = int( np.floor( n_col / 2) )
-        self.img_cur_markup[ center_row:(center_row + line_width), :] = np.array([0, 0, 0])
-        self.img_cur_markup[ center_col:(center_col + line_width), :] = np.array([0, 0, 0])
+        self.img_cur_markup = self.img_cur
+        self.img_cur_markup[ center_row:(center_row + line_width), :] = [0, 0, 0]
+        self.img_cur_markup[ :, center_col:(center_col + line_width)] = [0, 0, 0]
 
         self.plot_image()
 
     def plot_image(self):
-        cv2.imshow("Image", self.img_cur_markup)
+        cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('image', 960, 540)
+        cv2.imshow('image', self.img_cur_markup)
         cv2.waitKey(1)
         pass
