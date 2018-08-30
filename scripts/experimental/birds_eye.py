@@ -10,15 +10,46 @@ import matplotlib.pyplot as plt
 x  = 0
 y  = 1
 
+w_source = 1920.
+h_source = 1080.
+wh_source = np.array([w_source, h_source])
+
 bl_crop= [348, 981]
 br_crop = [1551,981]
 tr_crop = [1163,647]
 tl_crop = [747, 647]
+bl_ratio = np.array([0.18125, 0.90833])
+br_ratio = np.array([0.80781, 0.90833])
+tr_ratio = np.array([0.60573, 0.59907])
+tl_ratio = np.array([0.38906, 0.59907])
+bl_pix = (bl_ratio*wh_source).astype(int)
+br_pix = (br_ratio*wh_source).astype(int)
+tr_pix = (tr_ratio*wh_source).astype(int)
+tl_pix = (tl_ratio*wh_source).astype(int)
+
+y_crop_dsrd = 500 # for birdseye @ 1920 x 1080; crop first 500 rows
+y_crop_dsrd_ratio = 0.46296 # ratio of 500 / 1080.; tobe subtracted from
+bl_crop_ratio = np.array([0.18125, 0.44537])
+br_crop_ratio = np.array([0.80781, 0.44537])
+tr_crop_ratio = np.array([0.60573, 0.13611])
+tl_crop_ratio = np.array([0.38906, 0.13611])
+bl_crop_pix = (bl_crop_ratio*wh_source).astype(int)
+br_crop_pix = (br_crop_ratio*wh_source).astype(int)
+tr_crop_pix = (tr_crop_ratio*wh_source).astype(int)
+tl_crop_pix = (tl_crop_ratio*wh_source).astype(int)
 
 br = [0   , (br_crop[y] - tr_crop[y] - 1)]
 bl = [1203 - 1, (br_crop[y] - tr_crop[y] - 1)]
 tl = [400 ,  0]
 tr = [820 ,  0]
+br_dst_ratio = [0.00000, 0.30833]
+bl_dst_ratio = [0.62604, 0.30833]
+tl_dst_ratio = [0.20833, 0.00000]
+tr_dst_ratio = [0.42708, 0.00000]
+br_dst_pix = (br_dst_ratio*wh_source).astype(int)
+bl_dst_pix = (bl_dst_ratio*wh_source).astype(int)
+tl_dst_pix = (tl_dst_ratio*wh_source).astype(int)
+tr_dst_pix = (tr_dst_ratio*wh_source).astype(int)
 
 offset_x = 1750
 offset_yt = 1000
