@@ -162,6 +162,7 @@ include_directories(
 install(PROGRAMS
   scripts/mowbot_camera_node.py
   scripts/mowbot_line_find/mowbot_line_find.py
+  scripts/mowbot_birds_eye/mowbot_birds_eye.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

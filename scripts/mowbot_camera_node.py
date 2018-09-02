@@ -16,13 +16,16 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from mowbot_line_find.mowbot_line_find import MowbotLineFind
+from mowbot_birds_eye.mowbot_birds_eye import MowbotBirdsEye
 
 class MowbotCameraNode:
     myVar = 0
     debug_find_line = False
     debug = False
-    debug_one_frame = True
-    debug_show_grid = True
+    debug_one_frame = False
+    debug_show_grid = False
+    debug_show_birdseye = False
+    publish_birdseye = True
     _frame_count = 0
     _image = []
     _frame_stop = 3
@@ -31,10 +34,12 @@ class MowbotCameraNode:
     _file_name = "one_image.png"
 
     line_find = MowbotLineFind()
+    birds_eye = MowbotBirdsEye()
 
     def __init__(self):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/usb_cam/image_raw",Image,self.callback)
+        self.image_pub = rospy.Publisher("imageBirdsEye", Image)
 
     def callback(self,data):
 
@@ -45,6 +50,8 @@ class MowbotCameraNode:
                 print(e)
 
             self.line_find.updade_img_cur(cv_image)
+            self.birds_eye.get_birdseye(cv_image)
+
 
             if self.debug_find_line:
                 self.line_find.find_lines()
@@ -59,6 +66,17 @@ class MowbotCameraNode:
 
             if self.debug_show_grid:
                 self.line_find.draw_debug_grid()
+
+            if self.debug_show_birdseye:
+                cv2.namedWindow('Image', cv2.WINDOW_NORMAL)
+                cv2.imshow("Image", self.birds_eye.imgBirdsEye)
+                cv2.waitKey(1)
+
+            if self.publish_birdseye:
+                try:
+                    self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.birds_eye.imgBirdsEye, "bgr8"))
+                except CvBridgeError as e:
+                    print(e)
 
         else:
 
