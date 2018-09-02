@@ -50,7 +50,7 @@ tr_pix = (tr_ratio*wh_vid_strm).astype(int)
 tl_pix = (tl_ratio*wh_vid_strm).astype(int)
 
 # Define crop first portion of source image, redefine target locations in terms of cropped image
-y_crop_dsrd_ratio = 0.46296 # ratio of 500 / 1080.; tobe subtracted from
+y_crop_dsrd_ratio = 0.46296 # ratio of 500 / 1080.; tobe subtracted XX_ratio[y] variables
 y_crop_dsrd_pix = int( y_crop_dsrd_ratio*h_vid_strm)
 bl_crop_ratio = np.array([0.18125, 0.44537])
 br_crop_ratio = np.array([0.80781, 0.44537])
@@ -92,10 +92,10 @@ src = np.array([[tl_crop_pix[x], tl_crop_pix[y]], [tr_crop_pix[x], tr_crop_pix[y
 
 # Define properties of destination (dst) image
 dst = np.array([
-    [offset_x, offset_yt],
-    [maxWidth -1 - offset_x, offset_yt],
-    [maxWidth -1 - offset_x, maxHeight - 1 - offset_yb],
-    [offset_x, maxHeight -1 - offset_yb]], dtype = "float32")
+    [offset_x,                  offset_yt],
+    [maxWidth -1 - offset_x,    offset_yt],
+    [maxWidth -1 - offset_x,    maxHeight - 1 - offset_yb],
+    [offset_x,                  maxHeight -1 - offset_yb]], dtype = "float32")
 
 # Get source image with targets and scale to desired w & h
 img = cv2.imread(img_file)
