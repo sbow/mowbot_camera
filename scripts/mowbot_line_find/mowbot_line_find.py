@@ -20,11 +20,13 @@ class MowbotLineFind():
     img_cur = []
     img_cur_hsv = []
     img_cur_markup = []
-    _crop_region_x = 640
-    _crop_region_y = 290
+    hough_lines = []
+    _crop_region_x = 0
+    _crop_region_y = 0
 
     def __init__(self):
         meow = 0
+
     def updade_img_cur(self, img):
         self.img_cur = img
 
@@ -62,7 +64,7 @@ class MowbotLineFind():
         rho = 1  # distance resolution in pixels of the Hough grid
         theta = np.pi / 180  # angular resolution in radians of the Hough grid
         threshold = 15  # minimum number of votes (intersections in Hough grid cell)
-        min_line_length = 50  # minimum number of pixels making up a line
+        min_line_length = 20  # minimum number of pixels making up a line
         max_line_gap = 20  # maximum gap in pixels between connectable line segments
         line_image = np.copy(self.img_cur_markup) * 0  # creating a blank to draw lines on
 
@@ -75,14 +77,16 @@ class MowbotLineFind():
             for x1, y1, x2, y2 in line:
                 cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 5)
 
-        # Draw the lines on the  image
-        # self.img_cur_markup = cv2.addWeighted(self.img_cur, 0.8, line_image, 1, 0)
-        self.img_cur_markup[self._crop_region_y:, self._crop_region_x:] =   line_image #+ self.img_cur_markup[
-                                                                            #self._crop_region_y:, self._crop_region_x:]
+        self.hough_lines = lines # save hough lines, format [[x1 y1 x2 y2], ...]
 
         # Plot if desired
         if self.debug:
+            # Draw the lines on the  image
+            # self.img_cur_markup = cv2.addWeighted(self.img_cur, 0.8, line_image, 1, 0)
+            self.img_cur_markup[self._crop_region_y:, self._crop_region_x:] =   line_image #+ self.img_cur_markup[
+                                                                        #self._crop_region_y:, self._crop_region_x:]
             self.plot_image()
+            self.print_lines()
 
         pass
 
@@ -108,3 +112,10 @@ class MowbotLineFind():
         cv2.imshow('image', self.img_cur_markup)
         cv2.waitKey(1)
         pass
+
+    def print_lines(self):
+        f = open("/home/nvidia/racecar-ws/src/mowbot_camera/scripts/experimental/lines.txt", "a")
+        for line in self.hough_lines:
+            for x1, y1, x2, y2 in line:
+                f.write( str(x1) + "," + str(y1) + "," + str(x2) + "," + str(y2) + "\n" )
+        f.write("END\n")

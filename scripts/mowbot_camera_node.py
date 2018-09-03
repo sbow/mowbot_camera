@@ -20,7 +20,7 @@ from mowbot_birds_eye.mowbot_birds_eye import MowbotBirdsEye
 
 class MowbotCameraNode:
     myVar = 0
-    debug_find_line = False
+    debug_find_line = True
     debug = False
     debug_one_frame = False
     debug_show_grid = False
@@ -39,7 +39,7 @@ class MowbotCameraNode:
     def __init__(self):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/usb_cam/image_raw",Image,self.callback)
-        self.image_pub = rospy.Publisher("imageBirdsEye", Image)
+        self.image_pub = rospy.Publisher("imageBirdsEye", Image, queue_size=10)
 
     def callback(self,data):
 
@@ -49,8 +49,8 @@ class MowbotCameraNode:
             except CvBridgeError as e:
                 print(e)
 
-            self.line_find.updade_img_cur(cv_image)
             self.birds_eye.get_birdseye(cv_image)
+            self.line_find.updade_img_cur(self.birds_eye.imgBirdsEye)
 
 
             if self.debug_find_line:
