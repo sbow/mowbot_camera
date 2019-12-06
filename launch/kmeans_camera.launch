@@ -1,0 +1,14 @@
+<launch>
+	<!-- 
+
+	This launch file initializes kmeans_camera.
+
+	arguments:
+
+	important parameters:
+	 -->
+
+	<node pkg="mowbot_camera" type="kmeans_camera_node.py" name="kmeans_camera" output="screen">
+		<param name="my_name" value="Shaun Bowman"/>
+	</node>
+</launch>
