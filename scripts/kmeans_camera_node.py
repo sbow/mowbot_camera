@@ -17,6 +17,7 @@ import cv2
 import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
+import kmeans_lanes as kl
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
 # Defaults to 1280x720 @ 60fps
@@ -60,7 +61,8 @@ def show_camera():
         # Window
         while cv2.getWindowProperty("CSI Camera", 0) >= 0:
             ret_val, img = cap.read()
-            cv2.imshow("CSI Camera", img)
+            bl_string, seg_img = kl.get_bl(img)
+            cv2.imshow("CSI Camera", seg_img)
             # This also acts as
             keyCode = cv2.waitKey(30) & 0xFF
             # Stop the program on the ESC key
@@ -72,6 +74,9 @@ def show_camera():
         print("Unable to open camera")
 
 def kmeansCam():
+    show_cam = False
+    if show_cam:
+        show_camera()
     ret_val = []
     img = []
     print(gstreamer_pipeline(flip_method=0))
@@ -81,10 +86,12 @@ def kmeansCam():
     rate = rospy.Rate(30) # 30 hz
     while not rospy.is_shutdown():
         kmeans_msg = "Kmeans Running"
-        rospy.loginfo(kmeans_msg)
-        pub.publish(kmeans_msg)
         if cap.isOpened():
             ret_val, img = cap.read()
+            bl_string, seg_img = kl.get_bl(img)
+            kmeans_msg = kmeans_msg + "," + bl_string
+        rospy.loginfo(kmeans_msg)
+        pub.publish(kmeans_msg)
         rate.sleep()
 
 if __name__ == "__main__":
@@ -93,4 +100,6 @@ if __name__ == "__main__":
         kmeansCam()
     except rospy.ROSInterruptException:
         cap.release()
+        if show_cam:
+            cv2.destroyAllWindows()
         pass
