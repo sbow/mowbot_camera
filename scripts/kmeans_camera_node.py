@@ -62,7 +62,7 @@ def show_camera():
         while cv2.getWindowProperty("CSI Camera", 0) >= 0:
             ret_val, img = cap.read()
             bl_string, seg_img = kl.get_bl(img)
-            cv2.imshow("CSI Camera", seg_img)
+            cv2.imshow("CSI Camera", img)
             # This also acts as
             keyCode = cv2.waitKey(30) & 0xFF
             # Stop the program on the ESC key
@@ -84,12 +84,18 @@ def kmeansCam():
     pub = rospy.Publisher('KmeansMsg', String, queue_size=10)
     rospy.init_node('KmeansCam', anonymous=True)
     rate = rospy.Rate(30) # 30 hz
+    i = 0
+    f_name_raw = "Raw_Track_"
+    f_name_seg = "Seg_Track_"
     while not rospy.is_shutdown():
         kmeans_msg = "Kmeans Running"
         if cap.isOpened():
             ret_val, img = cap.read()
             bl_string, seg_img = kl.get_bl(img)
             kmeans_msg = kmeans_msg + "," + bl_string
+            cv2.imwrite(f_name_raw+str(i)+".png",img)
+            cv2.imwrite(f_name_seg+str(i)+".png",seg_img)
+            i = i + 1
         rospy.loginfo(kmeans_msg)
         pub.publish(kmeans_msg)
         rate.sleep()
