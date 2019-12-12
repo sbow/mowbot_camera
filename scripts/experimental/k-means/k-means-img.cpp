@@ -28,18 +28,18 @@
 #include <sstream>
 #include <vector>
 
-struct Point {
-  float x{0}, y{0};
+struct Pixel {
+  float r{0}, g{0}, b{0};
 };
 
-using DataFrame = std::vector<Point>;
+using DataFrame = std::vector<Pixel>;
 
 float square(float value) {
   return value * value;
 }
 
 float squared_l2_distance(Point first, Point second) {
-  return square(first.x - second.x) + square(first.y - second.y);
+  return square(first.r - second.r) + square(first.g - second.g) + square(first.b - second.b);
 }
 
 DataFrame k_means(const DataFrame& data,
@@ -75,10 +75,11 @@ DataFrame k_means(const DataFrame& data,
     // Sum up and count points for each cluster.
     DataFrame new_means(k);
     std::vector<size_t> counts(k, 0);
-    for (size_t point = 0; point < data.size(); ++point) {
-      const auto cluster = assignments[point];
-      new_means[cluster].x += data[point].x;
-      new_means[cluster].y += data[point].y;
+    for (size_t pixel = 0; pixel < data.size(); ++pixel) {
+      const auto cluster = assignments[pixel];
+      new_means[cluster].r += data[pixel].r;
+      new_means[cluster].g += data[pixel].g;
+      new_means[cluster].b += data[pixel].b;
       counts[cluster] += 1;
     }
 
@@ -86,8 +87,9 @@ DataFrame k_means(const DataFrame& data,
     for (size_t cluster = 0; cluster < k; ++cluster) {
       // Turn 0/0 into 0/1 to avoid zero division.
       const auto count = std::max<size_t>(1, counts[cluster]);
-      means[cluster].x = new_means[cluster].x / count;
-      means[cluster].y = new_means[cluster].y / count;
+      means[cluster].r = new_means[cluster].r / count;
+      means[cluster].g = new_means[cluster].g / count;
+      means[cluster].b = new_means[cluster].b / count;
     }
   }
 
@@ -116,8 +118,8 @@ int main(int argc, const char* argv[]) {
     Point point;
     std::istringstream line_stream(line);
     size_t label;
-    line_stream >> point.x >> point.y >> label;
-    data.push_back(point);
+    line_stream >> pixel.r >> pixel.g >> pixel.b;
+    data.push_back(pixel);
   }
 
   DataFrame means;
