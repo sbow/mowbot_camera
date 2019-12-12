@@ -5,7 +5,7 @@
 // From https://github.com/goldsborough/k-means/blob/master/cpp/k-means.cpp
 // Also http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
 //
-// Compile with: clang++ -std=c++11 -O3 -o k-means k-means.cpp
+// Compile with: clang++ -std=c++11 -O3 -o k-means-img k-means-img.cpp
 // ^note: ...ohhh3... not zero3
 // sudo yum install clang
 //
@@ -38,7 +38,7 @@ float square(float value) {
   return value * value;
 }
 
-float squared_l2_distance(Point first, Point second) {
+float squared_l2_distance(Pixel first, Pixel second) {
   return square(first.r - second.r) + square(first.g - second.g) + square(first.b - second.b);
 }
 
@@ -115,7 +115,7 @@ int main(int argc, const char* argv[]) {
   }
   std::string line;
   while (std::getline(stream, line)) {
-    Point point;
+    Pixel pixel;
     std::istringstream line_stream(line);
     size_t label;
     line_stream >> pixel.r >> pixel.g >> pixel.b;
@@ -136,6 +136,6 @@ int main(int argc, const char* argv[]) {
             << number_of_runs << " runs)" << std::endl;
 
   for (auto& mean : means) {
-    std::cout << mean.x << " " << mean.y << std::endl;
+    std::cout << mean.r << " " << mean.g << " " << mean.b << std::endl;
   }
 }
