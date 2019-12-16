@@ -18,6 +18,7 @@ import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 import kmeans_lanes as kl
+from time import time
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
 # Defaults to 1280x720 @ 60fps
@@ -61,8 +62,15 @@ def show_camera():
         # Window
         while cv2.getWindowProperty("CSI Camera", 0) >= 0:
             ret_val, img = cap.read()
+            img[1] = img[1]/255.0
+            print(img.shape)
+            time0 = time()
             bl_string, seg_img = kl.get_bl(img)
-            cv2.imshow("CSI Camera", img)
+
+            print("Delta t for complete kmeans function: %0.3f"%( time() - time0))
+            cat_img = np.concatenate((img, cv2.resize(seg_img, (640,360), \
+                                                     interpolation=cv2.INTER_AREA)), axis=1)
+            cv2.imshow("CSI Camera", cat_img)
             # This also acts as
             keyCode = cv2.waitKey(30) & 0xFF
             # Stop the program on the ESC key
@@ -74,7 +82,7 @@ def show_camera():
         print("Unable to open camera")
 
 def kmeansCam():
-    show_cam = False
+    show_cam = True
     if show_cam:
         show_camera()
     ret_val = []
@@ -91,10 +99,10 @@ def kmeansCam():
         kmeans_msg = "Kmeans Running"
         if cap.isOpened():
             ret_val, img = cap.read()
-            bl_string, seg_img = kl.get_bl(img)
+            bl_string, seg_img = kl.get_bl(img, scale_w=96, scale_h=54, lane_len_min=5, n_colors=5)
             kmeans_msg = kmeans_msg + "," + bl_string
-            cv2.imwrite(f_name_raw+str(i)+".png",img)
-            cv2.imwrite(f_name_seg+str(i)+".png",seg_img)
+            #cv2.imwrite(f_name_raw+str(i)+".png",img)
+            #cv2.imwrite(f_name_seg+str(i)+".png",seg_img)
             i = i + 1
         rospy.loginfo(kmeans_msg)
         pub.publish(kmeans_msg)

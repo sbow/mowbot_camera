@@ -34,9 +34,10 @@ def do_kmeans(sample_img, n_colors):
     
     print("Fitting model on a small sub-sample of the data")
     t0 = time()
-    image_array_sample = shuffle(image_array, random_state=0)[:200]
-    kmeans = KMeans(n_clusters=n_colors, random_state=0).fit(image_array_sample)
-    print("done in %0.3fs." % (time() - t0))
+    image_array_sample = shuffle(image_array, random_state=0)[:150]
+    print("shuffle done in %0.3fs"%(time()-t0))
+    kmeans = KMeans(n_clusters=n_colors,  n_init=10, max_iter=1, tol=.01, random_state=0).fit(image_array_sample)
+    print("Kmeans + shuffle done in %0.3fs." % (time() - t0))
     
     # Get labels for all points
     print("Predicting color indices on the full image (k-means)")
@@ -167,10 +168,9 @@ def find_adjacent(kmeans_img, start_row, start_col, width, height):
     # finished search, return results
     return end_col, match_r, match_c, width_r
         
-def get_bl(raw_img, cntrl_row=35, n_colors=5, scale_w=120, scale_h=96, lane_len_min=15,
+def get_bl(raw_img, cntrl_row=35, n_colors=5, scale_w=120, scale_h=96, lane_len_min=5,
            lane_max_width=10, lane_min_spacing=5, n_bl_points=20,
            lane_max_widthstd=99, lane_min_widthmean=0):
-    n_colors = 5
     sample_img = raw_img 
     width = scale_w
     height = scale_h
