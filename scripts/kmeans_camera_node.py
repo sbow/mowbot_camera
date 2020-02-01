@@ -19,6 +19,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 import kmeans_lanes as kl
 from time import time
+import os
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
 # Defaults to 1280x720 @ 60fps
@@ -95,12 +96,17 @@ def kmeansCam():
     i = 0
     f_name_raw = "Raw_Track_"
     f_name_seg = "Seg_Track_"
+    img_n = 0
+    os.chdir("/home/nvidia")
     while not rospy.is_shutdown():
         kmeans_msg = "Kmeans Running"
         if cap.isOpened():
             ret_val, img = cap.read()
+            img_name = 'REC_'+str(img_n)+'.jpg'
+            cv2.imwrite(img_name, img, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+            img_n = img_n + 1
             bl_string, seg_img = kl.get_bl(img, scale_w=96, scale_h=54, lane_len_min=5, n_colors=5)
-            kmeans_msg = kmeans_msg + "," + bl_string
+            kmeans_msg = kmeans_msg + "," + bl_string + "," + img_name
             #cv2.imwrite(f_name_raw+str(i)+".png",img)
             #cv2.imwrite(f_name_seg+str(i)+".png",seg_img)
             i = i + 1
